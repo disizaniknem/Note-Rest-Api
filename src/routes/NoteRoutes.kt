@@ -1,7 +1,9 @@
 package com.disizaniknem.routes
 
 import com.disizaniknem.data.collections.Note
+import com.disizaniknem.data.deleteNoteForUser
 import com.disizaniknem.data.getNotesForUser
+import com.disizaniknem.data.requests.DeleteNoteRequest
 import com.disizaniknem.data.saveNote
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -40,6 +42,26 @@ fun Route.noteRoutes() {
                     call.respond(Conflict)
                 }
 
+            }
+        }
+    }
+
+    route("/deleteNote") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<DeleteNoteRequest>()
+                } catch (e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+
+                if (deleteNoteForUser(email, request.id)) {
+                    call.respond(OK)
+                } else {
+                    call.respond(Conflict)
+                }
             }
         }
     }
