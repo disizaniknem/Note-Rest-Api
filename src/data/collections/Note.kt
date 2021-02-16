@@ -7,7 +7,7 @@ data class Note(
     val title: String,
     val content: String,
     val date: Long,
-    val owner: List<String>,
+    val owners: List<String>,
     val color: String,
     @BsonId
     val id: String = ObjectId().toString()
