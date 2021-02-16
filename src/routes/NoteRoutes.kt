@@ -16,6 +16,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Route.noteRoutes() {
+
     route("/getNotes") {
         authenticate {
             get {
