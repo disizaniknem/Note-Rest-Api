@@ -2,6 +2,7 @@ package com.disizaniknem.data
 
 import com.disizaniknem.data.collections.Note
 import com.disizaniknem.data.collections.User
+import com.disizaniknem.security.checkHashForPassword
 import io.ktor.html.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,26 +18,7 @@ private val users = database.getCollection<User>()
 private val notes = database.getCollection<Note>()
 
 suspend fun getNotesForUser(email: String) : List<Note?> {
-
-    // Test 1
-    /*val listOfNotes = mutableListOf<Note>()
-
-    database.listCollections<Note>().toList().forEach {  note ->
-        for (owner in note.owners) {
-            if (owner == email) {
-                listOfNotes += note
-            }
-        }
-    }
-
-    return listOfNotes*/
-
-    // Test 2
     return notes.find(Note::owners contains email).toList()
-
-    // Test 3
-    /*val id = "whatever"
-    return listOf(notes.findOne(Note::id eq id))*/
 }
 
 suspend fun registerUser(user: User): Boolean {
@@ -49,7 +31,7 @@ suspend fun checkIfUserExists(email: String) : Boolean {
 
 suspend fun checkPasswordForEmail(email: String, passwordToCheck: String) : Boolean {
     val actualPassword = users.findOne(User::email eq email)?.password ?: return false
-    return actualPassword == passwordToCheck
+    return checkHashForPassword(passwordToCheck, actualPassword)
 }
 
 suspend fun saveNote(note: Note): Boolean {

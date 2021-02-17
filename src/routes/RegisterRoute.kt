@@ -5,6 +5,7 @@ import com.disizaniknem.data.collections.User
 import com.disizaniknem.data.registerUser
 import com.disizaniknem.data.requests.AccountRequest
 import com.disizaniknem.data.response.SimpleResponse
+import com.disizaniknem.security.getHashWithSalt
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.features.ContentTransformationException
@@ -26,7 +27,7 @@ fun Route.registerRoute() {
 
             val userExists = checkIfUserExists(request.email)
             if (!userExists) {
-                if(registerUser(User(request.email, request.password))) {
+                if(registerUser(User(request.email, getHashWithSalt(request.password)))) {
                     call.respond(OK, SimpleResponse(true, "Successfully created account"))
                 } else {
                     call.respond(OK, SimpleResponse(false, "An unknown error occured"))
